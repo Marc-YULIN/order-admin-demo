@@ -1,0 +1,18 @@
+@page "{id:int?}"
+@model OrderAdminDemo.Pages.Members.EditModel
+@{
+    ViewData["Title"] = Model.Id is null ? "新增會員" : "編輯會員";
+    string[] cities = ["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市", "新竹市", "基隆市", "其他"];
+}
+<div class="page-head"><h1>@ViewData["Title"]</h1></div>
+<form method="post" class="panel" style="max-width:560px">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3"><label asp-for="Input.Name" class="form-label"></label><input asp-for="Input.Name" class="form-control" /><span asp-validation-for="Input.Name" class="text-danger small"></span></div>
+    <div class="mb-3"><label asp-for="Input.Phone" class="form-label"></label><input asp-for="Input.Phone" class="form-control" /><span asp-validation-for="Input.Phone" class="text-danger small"></span></div>
+    <div class="mb-3"><label asp-for="Input.Email" class="form-label"></label><input asp-for="Input.Email" class="form-control" /><span asp-validation-for="Input.Email" class="text-danger small"></span></div>
+    <div class="mb-3"><label asp-for="Input.City" class="form-label"></label>
+        <select asp-for="Input.City" class="form-select"><option value="">（未填）</option>@foreach (var c in cities){<option>@c</option>}</select></div>
+    <div class="mb-3"><label asp-for="Input.Note" class="form-label"></label><textarea asp-for="Input.Note" class="form-control" rows="2"></textarea></div>
+    <button class="btn btn-primary">儲存</button>
+    <a href="/Members" class="btn btn-outline-secondary">取消</a>
+</form>

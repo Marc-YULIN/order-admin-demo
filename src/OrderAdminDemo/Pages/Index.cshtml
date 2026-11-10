@@ -1,0 +1,62 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "儀表板";
+    var max = Math.Max(1, Model.Last14Days.Max(d => d.Count));
+}
+<div class="page-head"><h1>儀表板</h1><span class="text-muted">@DateTime.Now.ToString("yyyy/MM/dd")</span></div>
+
+<div class="row g-3 mb-4">
+    @if (User.IsInRole(Roles.Admin))
+    {
+        <div class="col-6 col-lg-3"><div class="card-stat"><div class="label">本月營收（已付款）</div><div class="value">NT$@Model.MonthRevenue.ToString("N0")</div></div></div>
+    }
+    <div class="col-6 col-lg-3"><div class="card-stat"><div class="label">本月訂單</div><div class="value">@Model.MonthOrders</div></div></div>
+    <div class="col-6 col-lg-3"><a class="text-decoration-none text-reset" href="/Orders?status=PendingPayment"><div class="card-stat"><div class="label">待付款</div><div class="value text-warning">@Model.PendingPayment</div></div></a></div>
+    <div class="col-6 col-lg-3"><a class="text-decoration-none text-reset" href="/Orders?status=Paid"><div class="card-stat"><div class="label">待出貨</div><div class="value text-success">@Model.ToShip</div></div></a></div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="panel">
+            <h2 class="h6 mb-3">近 14 天訂單數</h2>
+            <table class="table table-sm table-borderless mb-0">
+                @foreach (var d in Model.Last14Days)
+                {
+                    <tr>
+                        <td style="width:70px" class="text-muted">@d.Day.ToString("MM/dd")</td>
+                        <td><div class="bar" style="width:@(d.Count * 100 / max)%"></div></td>
+                        <td style="width:40px" class="num">@d.Count</td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="panel">
+            <h2 class="h6 mb-3">最新訂單</h2>
+            <table class="table table-sm table-hover">
+                <thead><tr><th>訂單編號</th><th>會員</th><th class="num">金額</th><th>狀態</th></tr></thead>
+                @foreach (var o in Model.Recent)
+                {
+                    <tr>
+                        <td><a href="/Orders/Details/@o.Id">@o.OrderNo</a></td>
+                        <td>@o.Member?.Name</td>
+                        <td class="num">@o.Total.ToString("N0")</td>
+                        <td><span class="badge @OrderStatusText.BadgeClass(o.Status)">@OrderStatusText.Of(o.Status)</span></td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="panel">
+            <h2 class="h6 mb-3">低庫存商品 <span class="badge text-bg-danger">@Model.LowStock.Count</span></h2>
+            <table class="table table-sm">
+                <thead><tr><th>商品</th><th class="num">庫存</th><th class="num">安全庫存</th></tr></thead>
+                @foreach (var p in Model.LowStock)
+                {
+                    <tr class="low-stock"><td><a class="text-reset" href="/Products/Edit/@p.Id">@p.Name</a></td><td class="num">@p.Stock</td><td class="num">@p.SafetyStock</td></tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>

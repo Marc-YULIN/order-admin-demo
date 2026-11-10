@@ -1,0 +1,19 @@
+@page "{id:int}"
+@model OrderAdminDemo.Pages.Products.EditModel
+@{ ViewData["Title"] = "編輯商品"; var isAdmin = User.IsInRole(Roles.Admin); }
+<div class="page-head"><h1>編輯商品 <small class="text-muted fs-6">@Model.Product.Sku｜@Model.Product.Category</small></h1></div>
+<form method="post" class="panel" style="max-width:560px">
+    <div class="mb-3"><label asp-for="Input.Name" class="form-label"></label><input asp-for="Input.Name" class="form-control" /><span asp-validation-for="Input.Name" class="text-danger small"></span></div>
+    <div class="mb-3">
+        <label asp-for="Input.Price" class="form-label"></label>
+        <input asp-for="Input.Price" class="form-control" readonly="@(!isAdmin)" />
+        @if (!isAdmin) { <div class="form-text">售價只有管理員能修改</div> }
+        <span asp-validation-for="Input.Price" class="text-danger small"></span>
+    </div>
+    <div class="row">
+        <div class="col mb-3"><label asp-for="Input.Stock" class="form-label"></label><input asp-for="Input.Stock" class="form-control" /><span asp-validation-for="Input.Stock" class="text-danger small"></span></div>
+        <div class="col mb-3"><label asp-for="Input.SafetyStock" class="form-label"></label><input asp-for="Input.SafetyStock" class="form-control" /><span asp-validation-for="Input.SafetyStock" class="text-danger small"></span></div>
+    </div>
+    <button class="btn btn-primary">儲存</button>
+    <a href="/Products" class="btn btn-outline-secondary">取消</a>
+</form>

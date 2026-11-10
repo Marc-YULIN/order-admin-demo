@@ -1,0 +1,40 @@
+@page
+@model OrderAdminDemo.Pages.Members.IndexModel
+@{ ViewData["Title"] = "會員"; var isAdmin = User.IsInRole(Roles.Admin); }
+<div class="page-head">
+    <h1>會員</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-success" href="?handler=Export&q=@Uri.EscapeDataString(Model.Q ?? "")">匯出 Excel</a>
+        <a class="btn btn-primary" href="/Members/Edit">新增會員</a>
+    </div>
+</div>
+<form class="panel d-flex gap-2" method="get">
+    <input name="q" value="@Model.Q" class="form-control" placeholder="搜尋姓名、手機、Email" />
+    <button class="btn btn-secondary text-nowrap">搜尋</button>
+</form>
+<div class="panel">
+    <div class="table-responsive">
+    <table class="table table-hover">
+        <thead><tr><th>姓名</th><th>手機</th><th>Email</th><th>縣市</th><th>加入日期</th><th class="num">訂單數</th><th class="num">累計消費</th><th></th></tr></thead>
+        @foreach (var m in Model.Result.Items)
+        {
+            <tr>
+                <td>@m.Name</td><td>@m.Phone</td><td>@m.Email</td><td>@m.City</td>
+                <td>@m.CreatedAt.ToString("yyyy/MM/dd")</td>
+                <td class="num">@m.OrderCount</td><td class="num">@m.TotalSpent.ToString("N0")</td>
+                <td class="text-end text-nowrap">
+                    <a class="btn btn-sm btn-outline-primary" href="/Members/Edit/@m.Id">編輯</a>
+                    @if (isAdmin)
+                    {
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@m.Id" asp-route-q="@Model.Q" asp-route-p="@Model.Result.Page" class="d-inline"
+                              onsubmit="return confirm('確定刪除「@m.Name」？')">
+                            <button class="btn btn-sm btn-outline-danger">刪除</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+    </div>
+    <partial name="_Pager" model="(Model.Result.Page, Model.Result.TotalPages, Model.Result.TotalCount)" />
+</div>

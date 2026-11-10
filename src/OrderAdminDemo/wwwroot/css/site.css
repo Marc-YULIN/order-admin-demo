@@ -1,0 +1,28 @@
+body { font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif; background: #f4f6f9; font-size: 15px; }
+.app { display: flex; min-height: 100vh; }
+.sidebar { width: 210px; background: #1f2d3d; color: #cfd8e3; display: flex; flex-direction: column; padding: 18px 0; position: sticky; top: 0; height: 100vh; }
+.sidebar .brand { color: #fff; font-weight: 700; font-size: 18px; padding: 0 20px 18px; }
+.sidebar .brand small { display: block; font-weight: 400; font-size: 12px; color: #93a4b8; }
+.sidebar a { color: #cfd8e3; text-decoration: none; padding: 10px 20px; }
+.sidebar a:hover { background: #2b3d52; color: #fff; }
+.sidebar a.active { background: #2f5597; color: #fff; }
+.sidebar .user { margin-top: auto; padding: 16px 20px 0; border-top: 1px solid #2b3d52; color: #fff; }
+.content { flex: 1; padding: 24px 32px; min-width: 0; }
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.page-head h1 { font-size: 24px; margin: 0; }
+.card-stat { background: #fff; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.card-stat .label { color: #6b7280; font-size: 14px; }
+.card-stat .value { font-size: 28px; font-weight: 700; }
+.panel { background: #fff; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,.06); margin-bottom: 20px; }
+.table { background: #fff; margin-bottom: 0; }
+.table td, .table th { vertical-align: middle; }
+tr.low-stock td { color: #b91c1c; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.bar { background: #2f5597; height: 14px; border-radius: 3px; }
+.login-box { max-width: 380px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+@media (max-width: 768px) {
+  .app { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; padding: 8px; }
+  .sidebar .brand, .sidebar .user { display: none; }
+  .content { padding: 16px; }
+}

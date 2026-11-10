@@ -1,0 +1,93 @@
+@page "{id:int}"
+@model OrderAdminDemo.Pages.Orders.DetailsModel
+@using OrderAdminDemo.Services.Ecpay
+@{ ViewData["Title"] = "訂單 " + Model.Order.OrderNo; var o = Model.Order; }
+<div class="page-head">
+    <h1>訂單 @o.OrderNo <span class="badge @OrderStatusText.BadgeClass(o.Status) fs-6 align-middle">@OrderStatusText.Of(o.Status)</span></h1>
+    <a href="/Orders" class="btn btn-outline-secondary">回列表</a>
+</div>
+
+@switch (Model.Payment)
+{
+    case NotifyOutcome.Paid:
+    case NotifyOutcome.AlreadyProcessed:
+        <div class="alert alert-success">綠界付款完成，已驗證 CheckMacValue 並更新訂單狀態。</div>
+        break;
+    case NotifyOutcome.NotPaid:
+        <div class="alert alert-warning">付款未完成，訂單維持待付款，可以再付一次。</div>
+        break;
+    case NotifyOutcome.Simulated:
+        <div class="alert alert-info">收到綠界「模擬付款」，不是實際入帳，訂單狀態不變。</div>
+        break;
+    case NotifyOutcome.Rejected:
+        <div class="alert alert-danger">付款結果驗證失敗，訂單狀態未變更。</div>
+        break;
+}
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="panel">
+            <table class="table">
+                <thead><tr><th>商品</th><th class="num">單價</th><th class="num">數量</th><th class="num">小計</th></tr></thead>
+                @foreach (var i in o.Items)
+                {
+                    <tr><td>@i.ProductName</td><td class="num">@i.UnitPrice.ToString("N0")</td><td class="num">@i.Quantity</td><td class="num">@i.Subtotal.ToString("N0")</td></tr>
+                }
+                <tfoot><tr><th colspan="3" class="num">合計</th><th class="num fs-5">NT$@o.Total.ToString("N0")</th></tr></tfoot>
+            </table>
+        </div>
+        @if (Model.Notifications.Count > 0)
+        {
+            <div class="panel">
+                <h2 class="h6">綠界通知紀錄</h2>
+                <table class="table table-sm small mb-0">
+                    <thead><tr><th>時間</th><th>來源</th><th>結果</th></tr></thead>
+                    @foreach (var n in Model.Notifications)
+                    {
+                        <tr><td>@n.ReceivedAt.ToString("MM/dd HH:mm:ss")</td><td>@n.Source</td><td>@n.Result</td></tr>
+                    }
+                </table>
+            </div>
+        }
+    </div>
+    <div class="col-lg-4">
+        <div class="panel">
+            <dl class="mb-0">
+                <dt>會員</dt><dd>@o.Member?.Name（@o.Member?.Phone）</dd>
+                <dt>下單時間</dt><dd>@o.CreatedAt.ToString("yyyy/MM/dd HH:mm")</dd>
+                @if (o.PaidAt is not null)
+                {
+                    <dt>付款</dt><dd>@o.PaidAt?.ToString("yyyy/MM/dd HH:mm")｜@o.PaymentType<br /><span class="small text-muted">綠界交易編號 @o.PaymentTradeNo</span></dd>
+                }
+                @if (o.ShippedAt is not null)
+                {
+                    <dt>出貨時間</dt><dd>@o.ShippedAt?.ToString("yyyy/MM/dd HH:mm")</dd>
+                }
+            </dl>
+        </div>
+        <div class="panel d-grid gap-2">
+            @if (o.Status == OrderStatus.PendingPayment)
+            {
+                @if (Model.EcpayReady)
+                {
+                    <form method="post" asp-page="/Orders/Pay" asp-route-id="@o.Id" class="d-grid">
+                        <button class="btn btn-success">前往綠界付款（測試環境）</button>
+                    </form>
+                }
+                else
+                {
+                    <div class="small text-muted">尚未設定綠界測試金鑰，見 README「綠界測試環境」。</div>
+                }
+                <form method="post" asp-page-handler="Cancel" asp-route-id="@o.Id" class="d-grid" onsubmit="return confirm('取消後會把庫存加回，確定取消？')">
+                    <button class="btn btn-outline-danger">取消訂單</button>
+                </form>
+            }
+            @if (o.Status == OrderStatus.Paid)
+            {
+                <form method="post" asp-page-handler="Ship" asp-route-id="@o.Id" class="d-grid">
+                    <button class="btn btn-primary">標記為已出貨</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

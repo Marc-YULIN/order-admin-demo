@@ -1,0 +1,26 @@
+@page
+@model OrderAdminDemo.Pages.Account.LoginModel
+@{ ViewData["Title"] = "登入"; }
+<div class="login-box">
+    <h1 class="h4 mb-1">☕ 咖啡選物 訂單後台</h1>
+    <p class="text-muted mb-4">示範專案｜資料皆為虛構</p>
+    <form method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div class="mb-3">
+            <label asp-for="UserName" class="form-label">帳號</label>
+            <input asp-for="UserName" class="form-control" autocomplete="username" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label">密碼</label>
+            <input asp-for="Password" class="form-control" autocomplete="current-password" />
+        </div>
+        @if (Model.Error is not null)
+        {
+            <div class="alert alert-danger py-2">@Model.Error</div>
+        }
+        <button class="btn btn-primary w-100">登入</button>
+    </form>
+    <div class="small text-muted mt-4">
+        示範帳號：管理員 <code>admin</code>、店員 <code>staff</code>（密碼見 README）
+    </div>
+</div>

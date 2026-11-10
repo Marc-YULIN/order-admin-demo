@@ -1,0 +1,17 @@
+@page "{id:int}"
+@model OrderAdminDemo.Pages.Orders.PayModel
+@{ ViewData["Title"] = "前往綠界付款"; }
+<div class="panel" style="max-width:520px">
+    <h1 class="h5">正在前往綠界付款頁…</h1>
+    <p class="text-muted small mb-3">這是綠界<strong>測試環境</strong>，請用綠界文件提供的測試信用卡，不會實際扣款。</p>
+    <form id="ecpay" method="post" action="@Model.Checkout.ActionUrl">
+        @foreach (var f in Model.Checkout.Fields)
+        {
+            <input type="hidden" name="@f.Key" value="@f.Value" />
+        }
+        <button class="btn btn-success">若沒有自動跳轉，請按這裡</button>
+    </form>
+</div>
+@section Scripts {
+    <script>document.getElementById('ecpay').submit();</script>
+}

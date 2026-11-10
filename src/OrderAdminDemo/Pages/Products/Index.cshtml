@@ -1,0 +1,38 @@
+@page
+@model OrderAdminDemo.Pages.Products.IndexModel
+@{ ViewData["Title"] = "商品與庫存"; }
+<div class="page-head">
+    <h1>商品與庫存</h1>
+    <a class="btn btn-outline-success" href="?handler=Export&q=@Uri.EscapeDataString(Model.Q ?? "")&category=@Uri.EscapeDataString(Model.Category ?? "")&lowOnly=@Model.LowOnly">匯出 Excel</a>
+</div>
+<form class="panel d-flex gap-2 flex-wrap align-items-center" method="get">
+    <input name="q" value="@Model.Q" class="form-control" style="max-width:260px" placeholder="搜尋品名、料號" />
+    <select name="category" class="form-select" style="max-width:160px">
+        <option value="">全部分類</option>
+        @foreach (var c in Model.Categories)
+        {
+            <option selected="@(c == Model.Category)">@c</option>
+        }
+    </select>
+    <div class="form-check ms-2">
+        <input class="form-check-input" type="checkbox" name="lowOnly" value="true" id="low" checked="@Model.LowOnly" />
+        <label class="form-check-label" for="low">只看需補貨</label>
+    </div>
+    <button class="btn btn-secondary">篩選</button>
+</form>
+<div class="panel">
+    <div class="table-responsive">
+    <table class="table table-hover">
+        <thead><tr><th>料號</th><th>品名</th><th>分類</th><th class="num">售價</th><th class="num">庫存</th><th class="num">安全庫存</th><th></th></tr></thead>
+        @foreach (var p in Model.Result.Items)
+        {
+            <tr class="@(p.IsLowStock ? "low-stock" : "")">
+                <td>@p.Sku</td><td>@p.Name @if (p.IsLowStock){<span class="badge text-bg-danger ms-1">需補貨</span>}</td><td>@p.Category</td>
+                <td class="num">@p.Price.ToString("N0")</td><td class="num fw-bold">@p.Stock</td><td class="num">@p.SafetyStock</td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/Products/Edit/@p.Id">編輯</a></td>
+            </tr>
+        }
+    </table>
+    </div>
+    <partial name="_Pager" model="(Model.Result.Page, Model.Result.TotalPages, Model.Result.TotalCount)" />
+</div>

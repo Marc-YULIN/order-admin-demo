@@ -1,0 +1,46 @@
+@page
+@model OrderAdminDemo.Pages.Reports.IndexModel
+@{
+    ViewData["Title"] = "營收報表";
+    var total = Math.Max(1, Model.Categories.Sum(c => c.Revenue));
+    var max = Math.Max(1, Model.Categories.Select(c => c.Revenue).DefaultIfEmpty(0).Max());
+}
+<div class="page-head">
+    <h1>營收報表 <small class="text-muted fs-6">近 3 個月，只計已付款／已出貨</small></h1>
+    <a class="btn btn-outline-success" href="?handler=Export">匯出 Excel</a>
+</div>
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="panel">
+            <h2 class="h6">每月營收</h2>
+            <table class="table table-sm">
+                <thead><tr><th>月份</th><th class="num">訂單數</th><th class="num">營收</th></tr></thead>
+                @foreach (var m in Model.Months)
+                {
+                    <tr><td>@m.Month</td><td class="num">@m.Orders</td><td class="num">@m.Revenue.ToString("N0")</td></tr>
+                }
+            </table>
+        </div>
+        <div class="panel">
+            <h2 class="h6">分類佔比</h2>
+            <table class="table table-sm table-borderless mb-0">
+                @foreach (var c in Model.Categories)
+                {
+                    <tr><td style="width:70px">@c.Category</td><td><div class="bar" style="width:@(c.Revenue * 100 / max)%"></div></td><td class="num" style="width:150px">@c.Revenue.ToString("N0")（@((c.Revenue * 100.0 / total).ToString("0"))%）</td></tr>
+                }
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="panel">
+            <h2 class="h6">商品銷售排行</h2>
+            <table class="table table-sm table-hover">
+                <thead><tr><th>#</th><th>品名</th><th>分類</th><th class="num">數量</th><th class="num">營收</th></tr></thead>
+                @foreach (var (p, i) in Model.Products.Take(15).Select((p, i) => (p, i)))
+                {
+                    <tr><td>@(i + 1)</td><td>@p.Name</td><td>@p.Category</td><td class="num">@p.Quantity</td><td class="num">@p.Revenue.ToString("N0")</td></tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>

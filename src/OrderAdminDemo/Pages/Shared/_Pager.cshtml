@@ -1,0 +1,16 @@
+@model (int Page, int TotalPages, int TotalCount)
+@{
+    string Link(int p)
+    {
+        var q = Context.Request.Query.Where(kv => kv.Key != "p").Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value.ToString())}").ToList();
+        q.Add($"p={p}");
+        return "?" + string.Join("&", q);
+    }
+}
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="text-muted small">共 @Model.TotalCount.ToString("N0") 筆，第 @Model.Page / @Model.TotalPages 頁</span>
+    <div class="btn-group btn-group-sm">
+        <a class="btn btn-outline-secondary @(Model.Page <= 1 ? "disabled" : "")" href="@Link(Model.Page - 1)">上一頁</a>
+        <a class="btn btn-outline-secondary @(Model.Page >= Model.TotalPages ? "disabled" : "")" href="@Link(Model.Page + 1)">下一頁</a>
+    </div>
+</div>

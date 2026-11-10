@@ -1,0 +1,37 @@
+@page
+@model OrderAdminDemo.Pages.Orders.CreateModel
+@{ ViewData["Title"] = "建立訂單"; }
+<div class="page-head"><h1>建立訂單</h1></div>
+@if (Model.Error is not null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+<form method="post">
+    <div class="panel" style="max-width:560px">
+        <label class="form-label" for="member">會員</label>
+        <select id="member" name="MemberId" class="form-select" required>
+            <option value="">請選擇會員</option>
+            @foreach (var m in Model.Members)
+            {
+                <option value="@m.Id" selected="@(m.Id == Model.MemberId)">@m.Name（@m.Phone）</option>
+            }
+        </select>
+    </div>
+    <div class="panel">
+        <div class="table-responsive">
+        <table class="table table-sm">
+            <thead><tr><th>品名</th><th>分類</th><th class="num">售價</th><th class="num">庫存</th><th style="width:110px">數量</th></tr></thead>
+            @foreach (var p in Model.Products)
+            {
+                Model.Quantities.TryGetValue(p.Id, out var qty);
+                <tr class="@(p.Stock == 0 ? "text-muted" : "")">
+                    <td>@p.Name</td><td>@p.Category</td><td class="num">@p.Price.ToString("N0")</td><td class="num">@p.Stock</td>
+                    <td><input type="number" min="0" max="@p.Stock" name="Quantities[@p.Id]" value="@(qty > 0 ? qty : "")" class="form-control form-control-sm" disabled="@(p.Stock == 0)" /></td>
+                </tr>
+            }
+        </table>
+        </div>
+    </div>
+    <button class="btn btn-primary">建立訂單（扣庫存）</button>
+    <a href="/Orders" class="btn btn-outline-secondary">取消</a>
+</form>

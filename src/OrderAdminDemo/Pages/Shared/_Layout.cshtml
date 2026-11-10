@@ -1,0 +1,57 @@
+﻿@{
+    var signedIn = User.Identity?.IsAuthenticated == true;
+    var path = Context.Request.Path.Value ?? "/";
+    string Active(string prefix) => (prefix == "/" ? path == "/" : path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - 咖啡選物 訂單後台</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+@if (signedIn)
+{
+    <div class="app">
+        <nav class="sidebar">
+            <div class="brand">☕ 咖啡選物<small>訂單後台（示範）</small></div>
+            <a class="@Active("/")" href="/">儀表板</a>
+            <a class="@Active("/Orders")" href="/Orders">訂單</a>
+            <a class="@Active("/Members")" href="/Members">會員</a>
+            <a class="@Active("/Products")" href="/Products">商品與庫存</a>
+            @if (User.IsInRole(Roles.Admin))
+            {
+                <a class="@Active("/Reports")" href="/Reports">營收報表</a>
+            }
+            <div class="user">
+                <div>@User.FindFirst("DisplayName")?.Value</div>
+                <span class="badge text-bg-light">@Roles.DisplayName(User.IsInRole(Roles.Admin) ? Roles.Admin : Roles.Staff)</span>
+                <form method="post" asp-page="/Account/Logout" class="mt-2">
+                    <button class="btn btn-sm btn-outline-light w-100">登出</button>
+                </form>
+            </div>
+        </nav>
+        <main class="content">
+            @if (TempData["Message"] is string msg)
+            {
+                <div class="alert alert-success">@msg</div>
+            }
+            @if (TempData["Error"] is string err)
+            {
+                <div class="alert alert-danger">@err</div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+}
+else
+{
+    <main class="container py-5">@RenderBody()</main>
+}
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

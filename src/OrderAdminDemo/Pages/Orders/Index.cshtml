@@ -1,0 +1,44 @@
+@page
+@model OrderAdminDemo.Pages.Orders.IndexModel
+@{ ViewData["Title"] = "訂單"; }
+<div class="page-head">
+    <h1>訂單</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-success" href="?handler=Export&q=@Uri.EscapeDataString(Model.Q ?? "")&status=@Model.Status">匯出 Excel</a>
+        <a class="btn btn-primary" href="/Orders/Create">建立訂單</a>
+    </div>
+</div>
+@if (Request.Query["payment"] == "Rejected")
+{
+    <div class="alert alert-danger">付款結果驗證失敗（CheckMacValue 不符或找不到訂單），訂單狀態未變更。</div>
+}
+<form class="panel d-flex gap-2 flex-wrap" method="get">
+    <input name="q" value="@Model.Q" class="form-control" style="max-width:280px" placeholder="搜尋訂單編號、會員、手機" />
+    <select name="status" class="form-select" style="max-width:150px">
+        <option value="">全部狀態</option>
+        @foreach (var s in Enum.GetValues<OrderStatus>())
+        {
+            <option value="@s" selected="@(s == Model.Status)">@OrderStatusText.Of(s)</option>
+        }
+    </select>
+    <button class="btn btn-secondary">篩選</button>
+</form>
+<div class="panel">
+    <div class="table-responsive">
+    <table class="table table-hover">
+        <thead><tr><th>訂單編號</th><th>下單時間</th><th>會員</th><th class="num">金額</th><th>狀態</th><th>付款方式</th></tr></thead>
+        @foreach (var o in Model.Result.Items)
+        {
+            <tr>
+                <td><a href="/Orders/Details/@o.Id">@o.OrderNo</a></td>
+                <td>@o.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                <td>@o.Member?.Name</td>
+                <td class="num">@o.Total.ToString("N0")</td>
+                <td><span class="badge @OrderStatusText.BadgeClass(o.Status)">@OrderStatusText.Of(o.Status)</span></td>
+                <td class="small text-muted">@o.PaymentType</td>
+            </tr>
+        }
+    </table>
+    </div>
+    <partial name="_Pager" model="(Model.Result.Page, Model.Result.TotalPages, Model.Result.TotalCount)" />
+</div>
