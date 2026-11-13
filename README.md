@@ -1,6 +1,6 @@
 # order-admin-demo：訂單後台＋綠界金流
 
-![.NET 10](https://img.shields.io/badge/.NET-10-512BD4) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
+[![CI](https://github.com/Marc-YULIN/order-admin-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-YULIN/order-admin-demo/actions/workflows/ci.yml) ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
 ASP.NET Core (.NET 10) order admin demo: login with roles, members / products / orders, Excel export, and ECPay (綠界) payment integration with CheckMacValue verification.
 
