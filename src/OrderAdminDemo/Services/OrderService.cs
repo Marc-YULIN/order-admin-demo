@@ -32,7 +32,7 @@ public class OrderService(AppDbContext db, TimeProvider clock)
         var now = clock.GetLocalNow().DateTime;
         var order = new Order
         {
-            OrderNo = $"OD{now:yyMMddHHmmss}{Random.Shared.Next(10, 99)}",
+            OrderNo = await NewOrderNoAsync(now),
             MemberId = memberId,
             CreatedAt = now,
             Status = OrderStatus.PendingPayment,
@@ -47,6 +47,17 @@ public class OrderService(AppDbContext db, TimeProvider clock)
         db.Orders.Add(order);
         await db.SaveChangesAsync();
         return order;
+    }
+
+    /// <summary>時間戳加 4 位亂數；同一秒內撞號就重抽，資料表的唯一索引仍是最後防線。</summary>
+    private async Task<string> NewOrderNoAsync(DateTime now)
+    {
+        for (var attempt = 0; attempt < 10; attempt++)
+        {
+            var orderNo = $"OD{now:yyMMddHHmmss}{Random.Shared.Next(1000, 10000)}";
+            if (!await db.Orders.AnyAsync(o => o.OrderNo == orderNo)) return orderNo;
+        }
+        throw new OrderException("訂單編號產生失敗，請再試一次。");
     }
 
     /// <summary>取消待付款訂單，並把庫存加回去。</summary>
