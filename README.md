@@ -1,16 +1,16 @@
-# order-admin-demo：訂單後台＋綠界金流
+# order-admin-demo：訂單後台＋綠界付款串接
 
 [![CI](https://github.com/Marc-YULIN/order-admin-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-YULIN/order-admin-demo/actions/workflows/ci.yml) ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
 ASP.NET Core (.NET 10) order admin demo: login with roles, members / products / orders, Excel export, and ECPay (綠界) payment integration with CheckMacValue verification.
 
-用 ASP.NET Core 做的小型電商訂單後台示範：會員、商品庫存、訂單管理，串接**綠界金流（測試環境）**，付款結果驗證後自動更新訂單狀態。示範店家是虛構的「咖啡選物」，所有資料都是程式產生的假資料。
+用 ASP.NET Core 做的小型電商訂單後台示範：會員、商品庫存、訂單管理，串接**綠界 ECPay 付款（測試環境）**，付款結果驗證後自動更新訂單狀態。示範店家是虛構的「咖啡選物」，所有資料都是程式產生的假資料。
 
 ## 解決什麼問題
 
 - 訂單、會員、庫存分散在 Excel 和 LINE 對話裡，對帳和出貨常常漏掉
 - 套裝電商平台功能太多、月費高，又不符合自己的流程
-- 想在自己的網站收款，但不確定金流串接怎麼做才安全
+- 想在自己的網站收款，但不確定線上付款串接怎麼做才安全
 
 這個後台把**下單 → 付款 → 出貨**串成一條線：建立訂單時自動扣庫存，客人在綠界付款後，系統驗證綠界的通知才把訂單改成已付款。
 
@@ -46,10 +46,10 @@ ASP.NET Core (.NET 10) order admin demo: login with roles, members / products / 
 | 會員 | 新增、編輯、搜尋、分頁；有訂單的會員不能刪除（保留交易紀錄） |
 | 商品與庫存 | 低於安全庫存標紅並列在儀表板；店員能調庫存，但改不了售價 |
 | 訂單 | 建立訂單時先檢查全部品項庫存，足夠才一次扣除；取消待付款訂單會把庫存加回；狀態只能 待付款 → 已付款 → 已出貨 |
-| 綠界金流 | 產生 AIO 付款表單、驗證付款通知（ReturnURL）與付款完成頁（OrderResultURL） |
+| 綠界付款 | 產生 AIO 付款表單、驗證付款通知（ReturnURL）與付款完成頁（OrderResultURL） |
 | 匯出 Excel | 會員、商品、訂單、營收報表都能匯出（ClosedXML） |
 
-## 綠界金流的處理流程
+## 綠界付款的處理流程
 
 ```mermaid
 sequenceDiagram
@@ -141,7 +141,7 @@ tests/OrderAdminDemo.Tests/
 ## 可以客製成什麼服務
 
 - **小型電商／接單後台**：會員、訂單、庫存、出貨管理，依你的流程設計欄位與狀態
-- **金流串接**：綠界、藍新等金流，含付款通知驗證、對帳紀錄、退款流程
+- **線上付款串接**：綠界、藍新等，含付款通知驗證、對帳紀錄、退款流程
 - **門市／工作室內部系統**：預約、課程、維修單、請款單等，取代多份 Excel
 - **權限與報表**：依角色開放功能、營收與商品報表、定期匯出 Excel
 
